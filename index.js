@@ -33,3 +33,29 @@ controller.hears('omikuji',['direct_message','direct_mention','mention'],functio
 
     bot.reply(message, result);
 });
+
+// say tenki
+
+controller.hears('tenki',['direct_message','direct_mention','mention'],function(bot,message) {
+
+    let http = require('http');
+    const URL = 'http://weather.livedoor.com/forecast/webservice/json/v1?city=050010';
+
+    http.get(URL, (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+
+        res.on('data', (chunk) => {
+            body += chunk;
+        });
+
+        res.on('end', (res) => {
+            res = JSON.parse(body);
+      
+            bot.reply(message, res.description.text);
+            //console.log(res);
+        });
+    }).on('error', (e) => {
+        console.log(e.message); //エラー時
+    });
+});
