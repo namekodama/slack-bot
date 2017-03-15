@@ -35,7 +35,6 @@ controller.hears('omikuji',['direct_message','direct_mention','mention'],functio
 });
 
 // say tenki
-
 controller.hears('tenki',['direct_message','direct_mention','mention'],function(bot,message) {
 
     let http = require('http');
@@ -59,3 +58,38 @@ controller.hears('tenki',['direct_message','direct_mention','mention'],function(
         console.log(e.message); //エラー時
     });
 });
+
+// say uranai
+controller.hears('uranai',['direct_message','direct_mention','mention'],function(bot,message) {
+    var moment = require('moment');
+    var today = moment().format("YYYY/MM/DD");
+    var uri = 'http://api.jugemkey.jp/api/horoscope/free/' + today;
+
+    console.log(uri);
+
+    let http = require('http');
+    const URL = uri;
+
+    http.get(URL, (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+
+        res.on('data', (chunk) => {
+            body += chunk;
+        });
+
+        res.on('end', (res) => {
+            res = JSON.parse(body);
+
+            for(var value of res.horoscope[today]){
+              console.log(value.sign);
+              console.log(value.content);
+             }
+
+            bot.reply(message, res.horoscope[today][0].content);
+        });
+    }).on('error', (e) => {
+        console.log(e.message); //エラー時
+    });
+});
+
